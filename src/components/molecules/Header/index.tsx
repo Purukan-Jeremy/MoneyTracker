@@ -3,7 +3,26 @@ import React from 'react';
 import {Button} from '../../atoms';
 import {NullPhoto} from '../../../assets/icon';
 
-const Header = ({text, backButton, onPress, subText, textStyle, subTextStyle}) => {
+const Header = ({
+  text,
+  backButton,
+  onPress,
+  subText,
+  textStyle,
+  subTextStyle,
+  type,
+}) => {
+  if (type === 'sideProfile') {
+    return (
+      <View style={styles.containerWithPfp}>
+        <View>
+          <Text style={[styles.text, textStyle]}> {text}</Text>
+          <Text style={[styles.subText, subTextStyle]}> {subText}</Text>
+        </View>
+        <Image source={NullPhoto} style={styles.pfp}/>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       {backButton && (
@@ -12,7 +31,6 @@ const Header = ({text, backButton, onPress, subText, textStyle, subTextStyle}) =
       <Text style={[styles.text, textStyle]}> {text}</Text>
       <Text style={[styles.subText, subTextStyle]}> {subText}</Text>
     </View>
-    
   );
 };
 
@@ -34,14 +52,19 @@ const styles = StyleSheet.create({
   subText: {
     fontFamily: 'Poppins-Light',
     fontSize: 14,
-    marginLeft: -168,
-    marginTop: 15,
+    marginLeft: 34,
     color: '#8D92A3',
   },
-  pfp : {
+  pfp: {
     height: 50,
     width: 50,
-    marginLeft: 180,
-    marginTop: -10,
-  }
+    marginRight: 34,
+  },
+  containerWithPfp: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 });

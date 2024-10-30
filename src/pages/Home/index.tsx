@@ -8,9 +8,9 @@ const Home = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Header
+        type="sideProfile"
         text="Money Tracker"
         subText="Track your money"
-        textStyle={{marginLeft: -10, marginTop: -15}}
       />
       <View style={styles.contentWrapper}>
         <Gap height={15} />
@@ -21,19 +21,29 @@ const Home = ({navigation}) => {
         <View style={styles.linewrapper}>
           <View style={styles.line} />
         </View>
-        <View>
-          <Gap height={10}/>
-          <Text style={styles.cash}>Cash on Hand Rp. 4.000.000</Text>
-          <Gap height={20}/>
-          <Text style={styles.cash}>Cash on Bank Rp. 6.000.000</Text>
+        <View style={styles.cashSection}>
+          <Gap height={10} />
+          <Text style={styles.cash}>Cash on Hand</Text>
+          <Text style={styles.sumCash}>Rp. 4.000.000</Text>
+        </View>
+        <Gap height={10} />
+        <View style={styles.cashSection}>
+          <Text style={styles.cash}>Cash on Bank</Text>
+          <Text style={styles.sumCash}>Rp. 6.000.000</Text>
         </View>
         <Gap height={20} />
       </View>
       <View style={styles.contentWrapper}>
         <Text style={styles.transaction}>Add Transaction</Text>
-        <Button text="Cash on Hand" />
-        <Gap height={20}/>
-        <Button text="Cash on Bank" />
+        <Button
+          text="Cash on Hand"
+          onPress={() => navigation.navigate('CashOnHand')}
+        />
+        <Gap height={20} />
+        <Button
+          text="Cash on Bank"
+          onPress={() => navigation.navigate('CashOnBank')}
+        />
       </View>
     </View>
   );
@@ -48,7 +58,13 @@ const styles = StyleSheet.create({
   cash: {
     fontFamily: 'Poppins-Medium',
     fontSize: 18,
-    color: 'black'
+    color: 'black',
+    marginRight: 70,
+  },
+  sumCash: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 18,
+    color: 'black',
   },
   contentWrapper: {
     marginTop: 24,
@@ -80,10 +96,14 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 20,
   },
-  transaction : {
+  cashSection: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  transaction: {
     fontFamily: 'Poppins-SemiBold',
     fontSize: 18,
     color: 'black',
     marginVertical: 10,
-  }
+  },
 });
