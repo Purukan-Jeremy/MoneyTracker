@@ -1,10 +1,32 @@
 import {StyleSheet, TouchableOpacity, View, Image} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {Header, TextInput} from '../../components/molecules';
 import {Button, Gap} from '../../components/atoms';
 import {NullPhoto} from '../../assets/icon';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {showMessage} from 'react-native-flash-message';
 
 const SignUp = ({navigation}) => {
+  const [photo, setPhoto] = useState(NullPhoto);
+  const getImage = async () => {
+    const result = await launchImageLibrary({
+      maxWidth: 100,
+      maxHeight: 100,
+      quality: 0.5,
+      includeBase64: true,
+    });
+    if (result.didCancel) {
+      showMessage({
+        message: 'Pilih foto dibatalkan',
+        type: 'danger',
+      });
+      setPhoto(NullPhoto);
+    } else {
+      const assets = result.assets[0];
+      const base64 = `data:${assets.type};base64, ${assets.base64}`;
+      setPhoto({uri: base64});
+    }
+  };
   return (
     <View style={styles.container}>
       <Header
@@ -15,8 +37,8 @@ const SignUp = ({navigation}) => {
       <View style={styles.contentWrapper}>
         <View style={styles.profileContainer}>
           <View style={styles.profileBorder}>
-            <TouchableOpacity>
-              <Image source={NullPhoto} style={styles.photo} />
+            <TouchableOpacity onPress={getImage}>
+              <Image source={photo} style={styles.photo} />
             </TouchableOpacity>
           </View>
         </View>
@@ -64,5 +86,6 @@ const styles = StyleSheet.create({
   photo: {
     height: 90,
     width: 90,
+    borderRadius: 90 / 2,
   },
 });
