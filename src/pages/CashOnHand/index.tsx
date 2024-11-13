@@ -1,38 +1,104 @@
-import {StyleSheet, TouchableOpacity, View, Image, Text} from 'react-native';
-import {Header, TextInput} from '../../components/molecules';
+import {StyleSheet, Text, View, ScrollView} from 'react-native';
+import React, {useState} from 'react';
 import {Button, Gap} from '../../components/atoms';
-import React from 'react';
-import {NullPhoto} from '../../assets/icon';
+import {Header, Transaction, TextInput} from '../../components/molecules';
+import {getDatabase, ref, push, set} from 'firebase/database';
+import moment from 'moment';
+import {showMessage} from 'react-native-flash-message';
 
-const CashOnHand = ({navigation}) => {
+const CashOnBank = ({navigation, route}) => {
+  const {title, uid} = route.params;
+
+  const [description, setDescription] = useState('');
+  const [type, setType] = useState('');
+  const [amount, setAmount] = useState('');
+
+  const onSave = () => {
+    const db = getDatabase();
+    const transactionRef = ref(db, `transactions/${uid}`);
+    const newTransactionRef = push(transactionRef);
+    set(newTransactionRef, {
+      date: moment().format('LLL'),
+      description: description,
+      type: type,
+      amount: amount,
+      category: title,
+    });
+
+    showMessage({
+      message: 'Transaksi berhasil disimpan',
+      type: 'success',
+    });
+
+    navigation.navigate('Home', {uid: uid});
+  };
   return (
-    <View style={styles.container}>
-      <Header
-        text="Cash On Hand"
-        backButton={true}
-        onPress={() => navigation.goBack()}
-      />
+    <ScrollView
+      style={styles.pageContainer}
+      showsVerticalScrollIndicator={false}>
+      <Header text={title} backButton onPress={() => navigation.goBack()} />
       <View style={styles.contentWrapper}>
-        <Gap height={16} />
-        <TextInput label="Email Addres" placeholder="Type your email address" />
-        <Gap height={16} />
-        <TextInput label="Password" placeholder="Type your password" />
-        <Gap height={24} />
+        <TextInput
+          label="Description"
+          placeholder="Add the description"
+          onChangeText={value => setDescription(value)}
+        />
+        <Gap height={17} />
+        <TextInput
+          label="Type"
+          placeholder="Expense / Income"
+          onChangeText={value => setType(value)}
+        />
+        <Gap height={17} />
+        <TextInput
+          label="Amount"
+          placeholder="Amount"
+          onChangeText={value => setAmount(value)}
+        />
+        <Gap height={17} />
+        <Button text="Save" onPress={onSave} />
+        <Gap height={17} />
+        <Text style={styles.subTitle}>Last 3 Transactions</Text>
+        <Transaction
+          date="17 April 2024"
+          desc="Water, Food"
+          price="-Rp. 400.000"
+          type="debit"
+        />
+        <Transaction
+          date="17 April 2024"
+          desc="Office supplies"
+          price="-Rp. 400.000"
+          type="debit"
+        />
+        <Transaction
+          date="17 April 2024"
+          desc="Top Up"
+          price="Rp. 400.000"
+          type="credit"
+        />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
-export default CashOnHand;
+export default CashOnBank;
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     flex: 1,
   },
   contentWrapper: {
-    marginTop: 24,
-    backgroundColor: '#FFFFFF',
     flex: 1,
+    marginTop: 20,
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
+    paddingVertical: 18,
+  },
+  subTitle: {
+    fontFamily: 'Poppins-Medium',
+    color: '#000000',
+    fontSize: 16,
+    marginVertical: 12,
   },
 });

@@ -1,3 +1,5 @@
 import Header from './Header';
 import TextInput from './TextInput';
-export {Header, TextInput};
+import Transaction from './Transaction';
+import Loading from './Loading';
+export {Header, TextInput, Transaction, Loading};

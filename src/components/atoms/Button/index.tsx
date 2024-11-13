@@ -1,7 +1,6 @@
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {ArrowBack} from '../../../assets/icon';
-import {NullPhoto} from '../../../assets/icon';
 
 const Button = ({
   color = '#02CF8E',

@@ -1,48 +1,72 @@
-import {StyleSheet, TouchableOpacity, View, Image, Text} from 'react-native';
-import {Header, TextInput} from '../../components/molecules';
-import {Button, Gap} from '../../components/atoms';
-import React from 'react';
-import {NullPhoto} from '../../assets/icon';
 
-const Home = ({navigation}) => {
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, Image} from 'react-native';
+import {Button, Gap} from '../../components/atoms';
+import {DummyPhoto} from '../../assets/icon';
+import {getDatabase, ref, onValue} from 'firebase/database';
+import Rupiah from '../../utils/Rupiah';
+
+const Home = ({navigation, route}) => {
+  const {uid} = route.params;
+  const [fullName, setFullName] = useState('');
+  const [cashInBank, setCashInBank] = useState(0);
+  const [cashInHand, setCashInHand] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [photo, setPhoto] = useState(DummyPhoto);
+
+  useEffect(() => {
+    const db = getDatabase();
+    const userRef = ref(db, 'users/' + uid);
+    onValue(userRef, snapshot => {
+      const data = snapshot.val();
+      setPhoto({uri: data.photo});
+      setFullName(data.fullName);
+      setCashInBank(data.balance.cashInBank);
+      setCashInHand(data.balance.cashInHand);
+      setTotal(data.balance.total);
+    });
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Header
-        type="sideProfile"
-        text="Money Tracker"
-        subText="Track your money"
-      />
-      <View style={styles.contentWrapper}>
-        <Gap height={15} />
-        <Text style={styles.yourMoney}>Your Balance</Text>
-        <Gap height={5} />
-        <Text style={styles.money}>Rp. 10.000.000</Text>
-        <Gap height={2} />
-        <View style={styles.linewrapper}>
-          <View style={styles.line} />
+    <View style={styles.pageContainer}>
+      <View style={styles.headerContainer}>
+        <View>
+          <Text style={styles.appTitle}>{`Hi, ${fullName}`}</Text>
+          <Text style={styles.appSubTitle}>
+            Have you track your money today?
+          </Text>
         </View>
-        <View style={styles.cashSection}>
-          <Gap height={10} />
-          <Text style={styles.cash}>Cash on Hand</Text>
-          <Text style={styles.sumCash}>Rp. 4.000.000</Text>
-        </View>
-        <Gap height={10} />
-        <View style={styles.cashSection}>
-          <Text style={styles.cash}>Cash on Bank</Text>
-          <Text style={styles.sumCash}>Rp. 6.000.000</Text>
-        </View>
-        <Gap height={20} />
+        <Image source={photo} style={styles.photo} />
       </View>
       <View style={styles.contentWrapper}>
-        <Text style={styles.transaction}>Add Transaction</Text>
+        <Text style={styles.subTitle}>Your Balance</Text>
+        <Text style={styles.totalBalance}>{Rupiah(total)}</Text>
+        <View style={styles.line} />
+        <View style={styles.subTotalWrapper}>
+          <Text style={styles.subTotal}>Cash On Hand</Text>
+          <Text style={styles.subTotal}>{Rupiah(cashInHand)}</Text>
+        </View>
+        <View style={styles.subTotalWrapper}>
+          <Text style={styles.subTotal}>Cash On Bank</Text>
+          <Text style={styles.subTotal}>{Rupiah(cashInBank)}</Text>
+        </View>
+        <Text style={styles.subTitle}>Add Transaction</Text>
         <Button
-          text="Cash on Hand"
-          onPress={() => navigation.navigate('CashOnHand')}
+          text="Cash On Hand"
+          onPress={() =>
+            navigation.navigate('CashOnHand', {
+              uid: uid,
+            })
+          }
         />
-        <Gap height={20} />
+        <Gap height={10} />
         <Button
-          text="Cash on Bank"
-          onPress={() => navigation.navigate('CashOnBank')}
+          text="Cash On Bank"
+          onPress={() =>
+            navigation.navigate('CashOnBank', {
+              uid: uid,
+            })
+          }
         />
       </View>
     </View>
@@ -52,58 +76,62 @@ const Home = ({navigation}) => {
 export default Home;
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     flex: 1,
-  },
-  cash: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 18,
-    color: 'black',
-    marginRight: 70,
-  },
-  sumCash: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 18,
-    color: 'black',
   },
   contentWrapper: {
-    marginTop: 24,
-    backgroundColor: '#FFFFFF',
-    flex: 1,
     paddingHorizontal: 24,
+    backgroundColor: '#FFFFFF',
+    marginTop: 20,
+    flex: 1,
   },
-  yourMoney: {
+  subTitle: {
+    fontFamily: 'Poppins-Medium',
+    color: '#000000',
+    fontSize: 16,
+    marginVertical: 12,
+  },
+  totalBalance: {
     fontFamily: 'Poppins-SemiBold',
-    color: 'black',
-    fontSize: 20,
-  },
-  money: {
-    fontFamily: 'Poppins-Bold',
-    color: 'black',
+    color: '#000000',
     fontSize: 24,
     textAlign: 'center',
   },
   line: {
-    width: 341,
-    paddingLeft: 24,
-    height: 1,
-    backgroundColor: 'black',
-    justifyContent: 'center',
+    borderBottomColor: '#000000',
+    borderBottomWidth: 1,
+    marginVertical: 18,
   },
-  linewrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 18,
-    paddingBottom: 20,
-  },
-  cashSection: {
+  subTotalWrapper: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
-  transaction: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 18,
-    color: 'black',
-    marginVertical: 10,
+  subTotal: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: '#000000',
+  },
+  headerContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+    paddingVertical: 37,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  appTitle: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 22,
+    color: '#020202',
+  },
+  appSubTitle: {
+    fontFamily: 'Poppins-Light',
+    fontSize: 14,
+    color: '#8D92A3',
+  },
+  photo: {
+    height: 70,
+    width: 70,
+    borderRadius: 10,
   },
 });

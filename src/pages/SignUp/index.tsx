@@ -1,13 +1,26 @@
-import {StyleSheet, TouchableOpacity, View, Image} from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Image,
+  ScrollView,
+} from 'react-native';
 import React, {useState} from 'react';
 import {Header, TextInput} from '../../components/molecules';
 import {Button, Gap} from '../../components/atoms';
 import {NullPhoto} from '../../assets/icon';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {showMessage} from 'react-native-flash-message';
+import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
+import {getDatabase, ref, set} from 'firebase/database';
 
 const SignUp = ({navigation}) => {
   const [photo, setPhoto] = useState(NullPhoto);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [photoBased64, setPhotoBased64] = useState('');
+
   const getImage = async () => {
     const result = await launchImageLibrary({
       maxWidth: 100,
@@ -24,9 +37,36 @@ const SignUp = ({navigation}) => {
     } else {
       const assets = result.assets[0];
       const base64 = `data:${assets.type};base64, ${assets.base64}`;
+      setPhotoBased64(base64);
       setPhoto({uri: base64});
     }
   };
+
+  const createUser = () => {
+    const auth = getAuth();
+    const db = getDatabase();
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        // Signed up
+        const user = userCredential.user;
+        // console.log(user);
+        set(ref(db, 'users/' + user.uid), {
+          fullName: fullName,
+          email: email,
+          photo: photoBased64,
+        });
+        navigation.navigate('SignIn');
+      })
+      .catch(error => {
+        showMessage({
+          message: error.message,
+          type: 'danger',
+        });
+        // ..
+      });
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -34,7 +74,10 @@ const SignUp = ({navigation}) => {
         backButton={true}
         onPress={() => navigation.goBack()}
       />
-      <View style={styles.contentWrapper}>
+
+      <ScrollView
+        style={styles.contentWrapper}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.profileContainer}>
           <View style={styles.profileBorder}>
             <TouchableOpacity onPress={getImage}>
@@ -42,17 +85,26 @@ const SignUp = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-        <TextInput label="Full Name" placeholder="Type your full name" />
+        <TextInput
+          label="Full Name"
+          placeholder="Type your full name"
+          onChangeText={value => setFullName(value)}
+        />
         <Gap height={15} />
         <TextInput
           label="Email Address"
           placeholder="Type your email address"
+          onChangeText={value => setEmail(value)}
         />
         <Gap height={15} />
-        <TextInput label="Password" placeholder="Type your password" />
+        <TextInput
+          label="Password"
+          placeholder="Type your password"
+          onChangeText={value => setPassword(value)}
+        />
         <Gap height={24} />
-        <Button text="Continue" />
-      </View>
+        <Button text="Continue" onPress={createUser} />
+      </ScrollView>
     </View>
   );
 };
