@@ -1,4 +1,3 @@
-
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
 import {Button, Gap} from '../../components/atoms';
@@ -54,7 +53,8 @@ const Home = ({navigation, route}) => {
         <Button
           text="Cash On Hand"
           onPress={() =>
-            navigation.navigate('CashOnHand', {
+            navigation.navigate('AddTransaction', {
+              title: 'Cash On Hand',
               uid: uid,
             })
           }
@@ -63,7 +63,8 @@ const Home = ({navigation, route}) => {
         <Button
           text="Cash On Bank"
           onPress={() =>
-            navigation.navigate('CashOnBank', {
+            navigation.navigate('AddTransaction', {
+              title: 'Cash On Bank',
               uid: uid,
             })
           }

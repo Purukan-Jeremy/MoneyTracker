@@ -1,3 +1,4 @@
+
 import React from 'react';
 import SplashScreen from './src/pages/SplashScreen';
 import SignIn from './src/pages/SignIn';
@@ -5,8 +6,7 @@ import SignUp from './src/pages/SignUp';
 import Home from './src/pages/Home';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import CashOnHand from './src/pages/CashOnHand';
-import CashOnBank from './src/pages/CashOnBank';
+import AddTransaction from './src/pages/AddTransaction';
 import FlashMessage from 'react-native-flash-message';
 import './src/config/Firebase';
 
@@ -37,13 +37,8 @@ const App = () => {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="CashOnHand"
-          component={CashOnHand}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="CashOnBank"
-          component={CashOnBank}
+          name="AddTransaction"
+          component={AddTransaction}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

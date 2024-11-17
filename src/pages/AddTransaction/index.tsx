@@ -1,12 +1,12 @@
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import React, {useState} from 'react';
 import {Button, Gap} from '../../components/atoms';
-import {Header, Transaction, TextInput} from '../../components/molecules';
+import {Header, TransactionCard, TextInput} from '../../components/molecules';
 import {getDatabase, ref, push, set} from 'firebase/database';
 import moment from 'moment';
 import {showMessage} from 'react-native-flash-message';
 
-const CashOnBank = ({navigation, route}) => {
+const AddTransaction = ({navigation, route}) => {
   const {title, uid} = route.params;
 
   const [description, setDescription] = useState('');
@@ -59,19 +59,19 @@ const CashOnBank = ({navigation, route}) => {
         <Button text="Save" onPress={onSave} />
         <Gap height={17} />
         <Text style={styles.subTitle}>Last 3 Transactions</Text>
-        <Transaction
+        <TransactionCard
           date="17 April 2024"
           desc="Water, Food"
           price="-Rp. 400.000"
           type="debit"
         />
-        <Transaction
+        <TransactionCard
           date="17 April 2024"
           desc="Office supplies"
           price="-Rp. 400.000"
           type="debit"
         />
-        <Transaction
+        <TransactionCard
           date="17 April 2024"
           desc="Top Up"
           price="Rp. 400.000"
@@ -82,7 +82,7 @@ const CashOnBank = ({navigation, route}) => {
   );
 };
 
-export default CashOnBank;
+export default AddTransaction;
 
 const styles = StyleSheet.create({
   pageContainer: {
